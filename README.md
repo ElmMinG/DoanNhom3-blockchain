@@ -63,14 +63,16 @@ Clone repository này về máy:
 https://github.com/ElmMinG/DoanNhom3-blockchain.git
 
 
-Bước 2: Chạy ứng dụng
+###Bước 2: Chạy ứng dụng
 Mở thư mục dự án.
 Chạy file index.html (Khuyên dùng Live Server trên VS Code).
 Ứng dụng sẽ tự động chuyển hướng về trang Đăng nhập.
-Bước 3: Đăng nhập & Kết nối
+
+###Bước 3: Đăng nhập & Kết nối
+
 Tài khoản Admin (Demo):
 Email: admin@gmail.com
-Mật khẩu: 123
+Mật khẩu: 123123
 Kết nối Ví:
 Chuyển MetaMask sang mạng Sepolia.
 Bấm nút "Kết nối Ví" trên giao diện.

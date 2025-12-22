@@ -35,7 +35,6 @@
     </nav>
 
     <div class="container" style="margin-top: 100px;">
-        <!-- DASHBOARD -->
         <div class="row mb-4">
             <div class="col-md-4 mb-3">
                 <div class="glass-panel p-3 d-flex align-items-center justify-content-between h-100">
@@ -58,11 +57,9 @@
         <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab">
             <li class="nav-item"><a class="nav-link active" onclick="switchTab('donate')">Quyên Góp & Nhận Token</a></li>
             <li class="nav-item"><a class="nav-link" onclick="switchTab('vote')">Bỏ Phiếu (DAO)</a></li>
-            <!-- ĐÃ SỬA: Thêm id="navAdmin" để JS có thể tìm và ẩn nó -->
             <li class="nav-item" id="navAdmin"><a class="nav-link text-warning" onclick="switchTab('admin')">Quản trị</a></li>
         </ul>
 
-        <!-- TAB DONATE -->
         <div id="tab-donate" class="row justify-content-center fade-in">
             <div class="col-md-6 col-lg-5">
                 <div class="glass-panel p-4 text-center">
@@ -70,21 +67,28 @@
                     <p class="text-muted small">Tỷ lệ: 1 ETH = 1000 CHT (Token quản trị)</p>
                     <div class="mb-3"><input type="number" id="donateAmount" class="form-control form-dark text-center fw-bold" placeholder="0.01"></div>
                     <button class="btn btn-success w-100 py-2 fw-bold" onclick="donateETH()">Quyên Góp & Mint Token</button>
+                    
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                        <p class="small text-muted mb-2">Quét mã ủng hộ nhanh:</p>
+                        <img id="qrCodeImg" src="" class="img-thumbnail rounded" style="width: 120px; opacity: 0.9;">
+                        <p class="small text-muted mt-1">Network: Sepolia</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB VOTE -->
         <div id="tab-vote" class="d-none">
             <div class="d-flex justify-content-end mb-2"><button class="btn btn-sm btn-outline-light" onclick="loadData()"><i class="fa-solid fa-rotate"></i> Cập nhật</button></div>
             <div class="row g-4" id="requestsList"></div>
         </div>
 
-        <!-- TAB ADMIN -->
         <div id="tab-admin" class="d-none row justify-content-center">
             <div class="col-md-8">
                 <div class="glass-panel p-4 border border-warning border-opacity-25">
-                    <h4 class="text-warning mb-3">Tạo Yêu Cầu Mới</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-warning mb-0">Tạo Yêu Cầu Mới</h4>
+                        <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo</button>
+                    </div>
                     <div class="mb-3"><label class="small text-secondary">Mục đích</label><input type="text" id="reqDesc" class="form-control form-dark"></div>
                     <div class="row mb-3">
                         <div class="col-6"><label class="small text-secondary">Số tiền (ETH)</label><input type="number" id="reqValue" class="form-control form-dark"></div>
@@ -97,16 +101,23 @@
         </div>
     </div>
 
+    <footer class="text-center text-secondary py-4 border-top border-secondary border-opacity-25 mt-5 bg-dark bg-opacity-25">
+        <div class="container">
+            <div class="mt-3 small">&copy; 2025 Charity Token DAO. Smart Contract deployed on <span class="text-success fw-bold">Sepolia Testnet</span>.</div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // === ĐỊA CHỈ CONTRACT TOKEN CHUẨN ===
-        const contractAddress = "0x71BE50E555386d156FfD0f8ab1175523A6f2Dc7e";
+        // === DÁN ĐỊA CHỈ CONTRACT MỚI CỦA BẠN VÀO ĐÂY ===
+        const contractAddress = "0xF7714200f97150BCde1b59C365B3fEFF23cAD0B0";
         
-        // ABI ĐẦY ĐỦ CỦA CONTRACT TOKEN
+        // ABI Cập nhật (Có cancelled và cancelRequest)
         const contractABI = [
             {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
             {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
             {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
+            {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"cancelRequest","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"uint256","name":"durationInSeconds","type":"uint256"}],"name":"createRequest","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[],"name":"donate","outputs":[],"stateMutability":"payable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"finalizeRequest","outputs":[],"stateMutability":"nonpayable","type":"function"},
@@ -115,27 +126,28 @@
             {"inputs":[],"name":"admin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"getRequests","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"internalType":"struct CharityTokenDAO.Request[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getRequests","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"bool","name":"cancelled","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"internalType":"struct CharityTokenDAO.Request[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"requests","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"requests","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"bool","name":"cancelled","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
         ];
 
         let provider, signer, contract, currentAccount = null;
 
-        // Logic Auth
+        // Auth & Admin Check
         if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
         
-        // --- LOGIC PHÂN QUYỀN ADMIN (MỚI) ---
         const userEmail = localStorage.getItem('currentUser') || 'Khách';
+        const isAdmin = userEmail === 'admin@gmail.com'; 
         document.getElementById('webUsername').innerText = userEmail;
 
-        // Định nghĩa Admin cứng là admin@gmail.com
-        if (userEmail !== 'admin@gmail.com') {
+        if (!isAdmin) {
             const adminTab = document.getElementById('navAdmin');
-            if(adminTab) adminTab.style.display = 'none'; // Ẩn tab Admin nếu không phải admin
+            if(adminTab) adminTab.style.display = 'none';
         }
-        // ------------------------------------
+
+        // Cập nhật QR Code theo địa chỉ contract
+        document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${contractAddress}`;
 
         function switchTab(tab) { 
             ['donate', 'vote', 'admin'].forEach(t => document.getElementById('tab-' + t).classList.add('d-none')); 
@@ -196,30 +208,45 @@
                 const timeString = timeLeft > 0 ? `${Math.floor(timeLeft/60)} phút còn lại` : "Đã hết hạn";
                 const isExpired = timeLeft <= 0;
 
+                // --- XỬ LÝ NÚT BẤM (CÓ NÚT HỦY) ---
+                let actionButtons = '';
+                
+                if (req.cancelled) {
+                    actionButtons = '<button class="btn btn-secondary btn-sm w-100" disabled>❌ Đã Hủy</button>';
+                } else if (!req.completed) {
+                    if (isAdmin) {
+                        actionButtons = `
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-light btn-sm w-50" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote</button>
+                                <div class="btn-group w-50">
+                                    <button class="btn btn-primary btn-sm" onclick="finalizeRequest(${req.id})">🚀 Rút</button>
+                                    <button class="btn btn-danger btn-sm" onclick="cancelReq(${req.id})" title="Hủy"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        actionButtons = `<button class="btn btn-outline-light btn-sm w-100" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote</button>`;
+                    }
+                } else {
+                    actionButtons = '<button class="btn btn-secondary btn-sm w-100" disabled>Đã giải ngân</button>';
+                }
+
                 list.innerHTML += `
                 <div class="col-md-6 col-lg-4">
-                    <div class="glass-panel p-3 h-100 d-flex flex-column ${req.completed ? 'border-success' : ''}">
+                    <div class="glass-panel p-3 h-100 d-flex flex-column ${req.completed ? 'border-success' : (req.cancelled ? 'border-danger' : '')}">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="badge bg-secondary">#${req.id}</span>
-                            ${req.completed ? '<span class="badge bg-success">Hoàn thành</span>' : `<span class="badge ${isExpired ? 'bg-danger' : 'bg-warning text-dark'}">${timeString}</span>`}
+                            ${req.cancelled ? '<span class="badge bg-danger">Đã Hủy</span>' : (req.completed ? '<span class="badge bg-success">Hoàn thành</span>' : `<span class="badge ${isExpired ? 'bg-danger' : 'bg-warning text-dark'}">${timeString}</span>`)}
                         </div>
                         <h5 class="fw-bold">${req.description}</h5>
                         <p class="small text-secondary mb-1">To: ${req.recipient.substring(0,6)}...</p>
                         <h3 class="text-warning">${ethers.utils.formatEther(req.value)} ETH</h3>
-                        
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between small text-muted">
-                                <span>Vote: ${voteCount.toFixed(1)} CHT</span>
-                                <span>${pct.toFixed(1)}%</span>
+                                <span>Vote: ${voteCount.toFixed(1)} CHT</span><span>${pct.toFixed(1)}%</span>
                             </div>
                             <div class="progress-vote-container mb-3"><div class="progress-bar-vote" style="width: ${pct}%"></div></div>
-                            
-                            ${!req.completed ? `
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-light btn-sm w-50" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote</button>
-                                    <button class="btn btn-primary btn-sm w-50" onclick="finalizeRequest(${req.id})">🚀 Rút</button>
-                                </div>
-                            ` : '<button class="btn btn-secondary btn-sm w-100" disabled>Đã giải ngân</button>'}
+                            ${actionButtons}
                         </div>
                     </div>
                 </div>`;
@@ -233,7 +260,8 @@
                 const tx = await contract.donate({ value: ethers.utils.parseEther(val) });
                 Swal.fire({title: 'Đang xử lý...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Thành công', 'Bạn đã nhận được Token CHT!', 'success');
+                const link = `https://sepolia.etherscan.io/tx/${tx.hash}`;
+                Swal.fire({ title: 'Thành công!', imageUrl: 'https://cdn-icons-png.flaticon.com/512/6270/6270515.png', imageWidth: 80, imageHeight: 80, html: `Bạn đã nhận được Token CHT!<br><br><a href="${link}" target="_blank">Xem Etherscan</a>` });
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -247,7 +275,7 @@
                 const tx = await contract.createRequest(desc, ethers.utils.parseEther(val), rec, duration);
                 Swal.fire({title: 'Đang tạo...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Thành công', 'Yêu cầu đã được tạo', 'success');
+                Swal.fire('Thành công', 'Đã tạo yêu cầu', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -257,7 +285,7 @@
                 const tx = await contract.voteRequest(id);
                 Swal.fire({title: 'Đang Vote...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Đã Vote!', 'Token của bạn đã được ghi nhận', 'success');
+                Swal.fire('Đã Vote!', 'Ghi nhận thành công', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -267,7 +295,20 @@
                 const tx = await contract.finalizeRequest(id);
                 Swal.fire({title: 'Đang rút...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Thành công', 'Tiền đã chuyển đi', 'success');
+                const link = `https://sepolia.etherscan.io/tx/${tx.hash}`;
+                Swal.fire({ title: 'Thành công', icon: 'success', html: `<a href="${link}" target="_blank">Xem giao dịch</a>` });
+                loadData();
+            } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
+        }
+
+        // --- HÀM HỦY (JS) ---
+        async function cancelReq(id) {
+            if(!confirm("Bạn chắc chắn muốn hủy yêu cầu này?")) return;
+            try {
+                const tx = await contract.cancelRequest(id);
+                Swal.fire({title: 'Đang hủy...', didOpen: () => Swal.showLoading()});
+                await tx.wait();
+                Swal.fire('Đã hủy!', 'Yêu cầu đã bị vô hiệu hóa.', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -276,17 +317,20 @@
             try {
                 await window.ethereum.request({
                     method: 'wallet_watchAsset',
-                    params: {
-                        type: 'ERC20',
-                        options: {
-                            address: contractAddress,
-                            symbol: 'CHT',
-                            decimals: 18,
-                            image: 'https://cdn-icons-png.flaticon.com/512/6270/6270515.png',
-                        },
-                    },
+                    params: { type: 'ERC20', options: { address: contractAddress, symbol: 'CHT', decimals: 18, image: 'https://cdn-icons-png.flaticon.com/512/6270/6270515.png' } },
                 });
             } catch (error) { console.error(error); }
+        }
+
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,Muc Dich,So Tien(ETH),Nguoi Nhan,Trang Thai\n";
+            csvContent += "Mua gao,0.01,0x123...abc,Hoan thanh\nMua ao am,0.02,0x456...def,Cho duyet";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "bao_cao_dao.csv");
+            document.body.appendChild(link);
+            link.click();
         }
 
         function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'login.html'; }

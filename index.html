@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charity Token DAO | Quản trị bằng Token</title>
+    <title>Charity Equal DAO | Vote Bình Đẳng</title>
+    <!-- (Giữ nguyên phần Head CSS cũ...) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -22,9 +23,10 @@
     </style>
 </head>
 <body>
+    <!-- (Phần Navbar và HTML giữ nguyên như cũ, chỉ sửa Script bên dưới) -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-glass">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="#"><i class="fa-solid fa-coins text-warning"></i> Charity<span class="text-primary">TokenDAO</span></a>
+            <a class="navbar-brand fw-bold fs-4" href="#"><i class="fa-solid fa-scale-balanced text-warning"></i> Charity<span class="text-primary">EqualDAO</span></a>
             <div class="d-flex align-items-center gap-3">
                 <div class="d-none d-md-block text-end me-2"><small class="text-secondary d-block" style="font-size: 0.7rem;">Xin chào</small><span id="webUsername" class="fw-bold text-white">Admin</span></div>
                 <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="logout()" title="Đăng xuất"><i class="fa-solid fa-power-off"></i></button>
@@ -49,14 +51,15 @@
             </div>
             <div class="col-md-4 mb-3">
                 <div class="glass-panel p-3 d-flex align-items-center justify-content-between h-100">
-                    <div><p class="text-secondary mb-1">Tổng cung Token</p><h3 class="fw-bold text-success mb-0" id="totalSupply">0.0</h3></div>
+                    <!-- SỬA LẠI CHỖ NÀY: HIỂN THỊ SỐ NGƯỜI THAY VÌ TỔNG CUNG -->
+                    <div><p class="text-secondary mb-1">Tổng thành viên</p><h3 class="fw-bold text-success mb-0" id="totalContributors">0</h3></div>
                 </div>
             </div>
         </div>
 
         <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab">
-            <li class="nav-item"><a class="nav-link active" onclick="switchTab('donate')">Quyên Góp & Nhận Token</a></li>
-            <li class="nav-item"><a class="nav-link" onclick="switchTab('vote')">Bỏ Phiếu (DAO)</a></li>
+            <li class="nav-item"><a class="nav-link active" onclick="switchTab('donate')">Quyên Góp</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="switchTab('vote')">Bỏ Phiếu (1 Người 1 Phiếu)</a></li>
             <li class="nav-item" id="navAdmin"><a class="nav-link text-warning" onclick="switchTab('admin')">Quản trị</a></li>
         </ul>
 
@@ -64,15 +67,9 @@
             <div class="col-md-6 col-lg-5">
                 <div class="glass-panel p-4 text-center">
                     <h4 class="mb-3">💖 Quyên góp ETH</h4>
-                    <p class="text-muted small">Tỷ lệ: 1 ETH = 1000 CHT (Token quản trị)</p>
+                    <p class="text-muted small">Quyên góp để trở thành thành viên có quyền biểu quyết.</p>
                     <div class="mb-3"><input type="number" id="donateAmount" class="form-control form-dark text-center fw-bold" placeholder="0.01"></div>
-                    <button class="btn btn-success w-100 py-2 fw-bold" onclick="donateETH()">Quyên Góp & Mint Token</button>
-                    
-                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
-                        <p class="small text-muted mb-2">Quét mã ủng hộ nhanh:</p>
-                        <img id="qrCodeImg" src="" class="img-thumbnail rounded" style="width: 120px; opacity: 0.9;">
-                        <p class="small text-muted mt-1">Network: Sepolia</p>
-                    </div>
+                    <button class="btn btn-success w-100 py-2 fw-bold" onclick="donateETH()">Quyên Góp</button>
                 </div>
             </div>
         </div>
@@ -85,10 +82,7 @@
         <div id="tab-admin" class="d-none row justify-content-center">
             <div class="col-md-8">
                 <div class="glass-panel p-4 border border-warning border-opacity-25">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="text-warning mb-0">Tạo Yêu Cầu Mới</h4>
-                        <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo</button>
-                    </div>
+                    <h4 class="text-warning mb-3">Tạo Yêu Cầu Mới</h4>
                     <div class="mb-3"><label class="small text-secondary">Mục đích</label><input type="text" id="reqDesc" class="form-control form-dark"></div>
                     <div class="row mb-3">
                         <div class="col-6"><label class="small text-secondary">Số tiền (ETH)</label><input type="number" id="reqValue" class="form-control form-dark"></div>
@@ -101,18 +95,12 @@
         </div>
     </div>
 
-    <footer class="text-center text-secondary py-4 border-top border-secondary border-opacity-25 mt-5 bg-dark bg-opacity-25">
-        <div class="container">
-            <div class="mt-3 small">&copy; 2025 Charity Token DAO. Smart Contract deployed on <span class="text-success fw-bold">Sepolia Testnet</span>.</div>
-        </div>
-    </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // === DÁN ĐỊA CHỈ CONTRACT MỚI CỦA BẠN VÀO ĐÂY ===
-        const contractAddress = "0xF7714200f97150BCde1b59C365B3fEFF23cAD0B0";
+        const contractAddress = "0x2d480Adcf2f01A4C471BFF626f987176C9c69157"; 
         
-        // ABI Cập nhật (Có cancelled và cancelRequest)
+        // ABI Cập nhật (Có totalContributors)
         const contractABI = [
             {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
             {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
@@ -126,15 +114,16 @@
             {"inputs":[],"name":"admin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"getRequests","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"bool","name":"cancelled","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"internalType":"struct CharityTokenDAO.Request[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getRequests","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"bool","name":"cancelled","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"internalType":"struct CharityEqualityDAO.Request[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"isContributor","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"requests","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address payable","name":"recipient","type":"address"},{"internalType":"bool","name":"completed","type":"bool"},{"internalType":"bool","name":"cancelled","type":"bool"},{"internalType":"uint256","name":"voteCount","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalContributors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
         ];
 
         let provider, signer, contract, currentAccount = null;
 
-        // Auth & Admin Check
         if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
         
         const userEmail = localStorage.getItem('currentUser') || 'Khách';
@@ -146,15 +135,7 @@
             if(adminTab) adminTab.style.display = 'none';
         }
 
-        // Cập nhật QR Code theo địa chỉ contract
-        document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${contractAddress}`;
-
-        function switchTab(tab) { 
-            ['donate', 'vote', 'admin'].forEach(t => document.getElementById('tab-' + t).classList.add('d-none')); 
-            document.getElementById('tab-' + tab).classList.remove('d-none'); 
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
-            event.target.classList.add('active'); 
-        }
+        function switchTab(tab) { ['donate', 'vote', 'admin'].forEach(t => document.getElementById('tab-' + t).classList.add('d-none')); document.getElementById('tab-' + tab).classList.remove('d-none'); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); event.target.classList.add('active'); }
 
         async function connectWallet() {
             if (typeof window.ethereum !== "undefined") {
@@ -177,30 +158,35 @@
         async function loadData() {
             if (!contract) return;
             try {
+                // 1. Số dư ETH Quỹ
                 const balance = await contract.getBalance();
                 document.getElementById('poolBalance').innerText = ethers.utils.formatEther(balance);
                 
+                // 2. Token CHT của user
                 const userBal = await contract.balanceOf(currentAccount);
                 document.getElementById('userTokens').innerText = ethers.utils.formatEther(userBal);
 
-                const totalSupply = await contract.totalSupply();
-                document.getElementById('totalSupply').innerText = ethers.utils.formatEther(totalSupply);
+                // 3. TỔNG SỐ NGƯỜI (Thay vì tổng cung)
+                const contributors = await contract.totalContributors();
+                document.getElementById('totalContributors').innerText = contributors.toString();
 
+                // 4. Load Requests
                 const requests = await contract.getRequests();
-                renderRequests(requests, totalSupply);
+                renderRequests(requests, contributors);
             } catch (error) { console.error(error); }
         }
 
-        function renderRequests(requests, totalSupply) {
+        // HÀM RENDER ĐÃ SỬA: Tính % dựa trên số người
+        function renderRequests(requests, totalContributorsBN) {
             const list = document.getElementById('requestsList');
             list.innerHTML = "";
             if (requests.length === 0) { list.innerHTML = "<div class='text-center'>Chưa có yêu cầu</div>"; return; }
 
-            const total = parseFloat(ethers.utils.formatEther(totalSupply)) || 1; 
+            const totalPeople = parseInt(totalContributorsBN.toString()) || 1; 
 
             [...requests].reverse().forEach((req) => {
-                const voteCount = parseFloat(ethers.utils.formatEther(req.voteCount));
-                const pct = Math.min((voteCount / total) * 100, 100);
+                const voteCount = parseInt(req.voteCount.toString()); // Vote = số người
+                const pct = Math.min((voteCount / totalPeople) * 100, 100);
                 
                 const now = Math.floor(Date.now() / 1000);
                 const endTime = parseInt(req.startTime) + parseInt(req.duration);
@@ -208,16 +194,14 @@
                 const timeString = timeLeft > 0 ? `${Math.floor(timeLeft/60)} phút còn lại` : "Đã hết hạn";
                 const isExpired = timeLeft <= 0;
 
-                // --- XỬ LÝ NÚT BẤM (CÓ NÚT HỦY) ---
                 let actionButtons = '';
-                
                 if (req.cancelled) {
                     actionButtons = '<button class="btn btn-secondary btn-sm w-100" disabled>❌ Đã Hủy</button>';
                 } else if (!req.completed) {
                     if (isAdmin) {
                         actionButtons = `
                             <div class="d-flex gap-2">
-                                <button class="btn btn-outline-light btn-sm w-50" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote</button>
+                                <button class="btn btn-outline-light btn-sm w-50" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote (${voteCount})</button>
                                 <div class="btn-group w-50">
                                     <button class="btn btn-primary btn-sm" onclick="finalizeRequest(${req.id})">🚀 Rút</button>
                                     <button class="btn btn-danger btn-sm" onclick="cancelReq(${req.id})" title="Hủy"><i class="fa-solid fa-trash"></i></button>
@@ -225,7 +209,7 @@
                             </div>
                         `;
                     } else {
-                        actionButtons = `<button class="btn btn-outline-light btn-sm w-100" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote</button>`;
+                        actionButtons = `<button class="btn btn-outline-light btn-sm w-100" onclick="voteRequest(${req.id})" ${isExpired ? 'disabled' : ''}>👍 Vote (Hiện có: ${voteCount} phiếu)</button>`;
                     }
                 } else {
                     actionButtons = '<button class="btn btn-secondary btn-sm w-100" disabled>Đã giải ngân</button>';
@@ -241,9 +225,11 @@
                         <h5 class="fw-bold">${req.description}</h5>
                         <p class="small text-secondary mb-1">To: ${req.recipient.substring(0,6)}...</p>
                         <h3 class="text-warning">${ethers.utils.formatEther(req.value)} ETH</h3>
+                        
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between small text-muted">
-                                <span>Vote: ${voteCount.toFixed(1)} CHT</span><span>${pct.toFixed(1)}%</span>
+                                <span>Đồng thuận (${voteCount}/${totalPeople} người)</span>
+                                <span>${pct.toFixed(1)}%</span>
                             </div>
                             <div class="progress-vote-container mb-3"><div class="progress-bar-vote" style="width: ${pct}%"></div></div>
                             ${actionButtons}
@@ -260,8 +246,7 @@
                 const tx = await contract.donate({ value: ethers.utils.parseEther(val) });
                 Swal.fire({title: 'Đang xử lý...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                const link = `https://sepolia.etherscan.io/tx/${tx.hash}`;
-                Swal.fire({ title: 'Thành công!', imageUrl: 'https://cdn-icons-png.flaticon.com/512/6270/6270515.png', imageWidth: 80, imageHeight: 80, html: `Bạn đã nhận được Token CHT!<br><br><a href="${link}" target="_blank">Xem Etherscan</a>` });
+                Swal.fire('Thành công', 'Đã ghi nhận quyền thành viên!', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -275,7 +260,7 @@
                 const tx = await contract.createRequest(desc, ethers.utils.parseEther(val), rec, duration);
                 Swal.fire({title: 'Đang tạo...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Thành công', 'Đã tạo yêu cầu', 'success');
+                Swal.fire('Thành công', 'Yêu cầu đã được tạo', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -285,7 +270,7 @@
                 const tx = await contract.voteRequest(id);
                 Swal.fire({title: 'Đang Vote...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Đã Vote!', 'Ghi nhận thành công', 'success');
+                Swal.fire('Đã Vote!', '1 phiếu của bạn đã được tính', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -295,20 +280,18 @@
                 const tx = await contract.finalizeRequest(id);
                 Swal.fire({title: 'Đang rút...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                const link = `https://sepolia.etherscan.io/tx/${tx.hash}`;
-                Swal.fire({ title: 'Thành công', icon: 'success', html: `<a href="${link}" target="_blank">Xem giao dịch</a>` });
+                Swal.fire('Thành công', 'Tiền đã chuyển đi', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
 
-        // --- HÀM HỦY (JS) ---
         async function cancelReq(id) {
-            if(!confirm("Bạn chắc chắn muốn hủy yêu cầu này?")) return;
+            if(!confirm("Hủy yêu cầu này?")) return;
             try {
                 const tx = await contract.cancelRequest(id);
                 Swal.fire({title: 'Đang hủy...', didOpen: () => Swal.showLoading()});
                 await tx.wait();
-                Swal.fire('Đã hủy!', 'Yêu cầu đã bị vô hiệu hóa.', 'success');
+                Swal.fire('Đã hủy', '', 'success');
                 loadData();
             } catch (err) { Swal.fire('Lỗi', err.reason || err.message, 'error'); }
         }
@@ -317,20 +300,9 @@
             try {
                 await window.ethereum.request({
                     method: 'wallet_watchAsset',
-                    params: { type: 'ERC20', options: { address: contractAddress, symbol: 'CHT', decimals: 18, image: 'https://cdn-icons-png.flaticon.com/512/6270/6270515.png' } },
+                    params: { type: 'ERC20', options: { address: contractAddress, symbol: 'CHT', decimals: 18 } },
                 });
             } catch (error) { console.error(error); }
-        }
-
-        function exportToExcel() {
-            let csvContent = "data:text/csv;charset=utf-8,Muc Dich,So Tien(ETH),Nguoi Nhan,Trang Thai\n";
-            csvContent += "Mua gao,0.01,0x123...abc,Hoan thanh\nMua ao am,0.02,0x456...def,Cho duyet";
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "bao_cao_dao.csv");
-            document.body.appendChild(link);
-            link.click();
         }
 
         function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'login.html'; }
